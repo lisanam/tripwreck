@@ -2,14 +2,12 @@
   "name": "tripwreck",
   "version": "1.0.0",
   "description": "trip assistance",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "test": "grunt test"
+    "start": "nodemon server/server.js",
+    "test": "mocha"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CupNCup/tripwreck.git"
-  },
+  "repository": "git+https://github.com/CupNCup/tripwreck.git",
   "keywords": [
     "trip"
   ],
@@ -23,21 +21,16 @@
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "enzyme": "^2.7.1",
-    "grunt": "^1.0.1",
-    "grunt-contrib-cssmin": "^1.0.2",
-    "grunt-contrib-uglify": "^2.0.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-eslint": "^19.0.0",
-    "grunt-mocha-test": "^0.13.2",
-    "grunt-nodemon": "^0.4.2",
-    "grunt-shell": "^2.1.0",
     "jsdom": "^9.9.1",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0"
   },
   "dependencies": {
     "body-parser": "^1.15.2",
+    "bookshelf": "^0.10.3",
     "dotenv": "^2.0.0",
-    "express": "^4.14.0"
+    "express": "^4.14.0",
+    "knex": "^0.12.7",
+    "pg": "^6.1.4"
   }
 }
