@@ -8,15 +8,14 @@ const path = require('path');
 require('dotenv').config();
 
 //Database setup
-const db = require('../database/db.js');
-app.set('bookshelf', db);
+// const db = require('../database/utiles.js');
+// db.initialisation();
+// app.set('db', db);
 
-//Middleware and Authentication setup
+//Middleware setup
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 app.use(bodyParser.urlencoded({ extended: true}));
 app.use(bodyParser.json());
-app.use(cookieParser());
 
 //Serve static files and node modules
 app.use('/scripts', express.static(path.join(__dirname, '..', 'mobile/node_modules')))
@@ -31,8 +30,8 @@ app.use('/list', listRouter);
 //   res.sendFile(path.join(__dirname, '..', 'mobile/index'));
 // });
 
-app.listen(8080, function () {
-  console.log('TripWreck is running on port 8080!');
+app.listen(7000, function () {
+  console.log('TripWreck is running on port 7000!');
 });
 
 module.exports = app;

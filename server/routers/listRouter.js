@@ -1,6 +1,6 @@
 const express = require('express');
 const listRouter = express.Router();
-const listControllers = require('./controllers/listControllers.js');
+const listControllers = require('../controllers/listControllers.js');
 
 listRouter.route('/')
   .post(listControllers.addList)
