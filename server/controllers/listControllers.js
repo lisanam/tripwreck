@@ -3,6 +3,9 @@ module.exports = {
   addList: function(req, res) {
 
   },
+  getListInfo: function(req, res) {
+
+  },
   getLists: function(req, res) {
 
   },

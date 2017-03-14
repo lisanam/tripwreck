@@ -1,7 +1,7 @@
 
-exports.up = function(knex, Promise) {
+exports.up = (knex, Promise) => {
   return Promise.all([
-    knex.schema.createTable('users', function(table) {
+    knex.schema.createTable('users', (table) => {
       table.increments('id').primary();
       table.string('auth_id')
         .unique()
@@ -13,21 +13,25 @@ exports.up = function(knex, Promise) {
       table.timestamps();
     }),
 
-    knex.schema.createTable('lists', function(table){
+    knex.schema.createTable('lists', (table) => {
       table.increments('id').primary();
-      table.string('title');
-      table.string('description');
+      table.string('title')
+        .defaultTo('New List')
+        .nullable(false);
+      table.text('description');
       table.string('city');
-      table.integer('uid')
+      table.integer('user_id')
         .references('id')
-        .inTable('users');
+        .inTable('users')
+        .nullable(false);
       table.timestamps();
     }),
 
-    knex.schema.createTable('stores', function(table){
+    knex.schema.createTable('stores', (table) => {
       table.increments('id').primary();
-      table.string('name');
-      table.integer('phone');
+      table.string('name')
+        .nullable(false);
+      table.integer('phone').unique();
       table.specificType('location', 'jsonb[]');
       table.specificType('address', 'jsonb[]');
       table.string('zomato_id');
@@ -39,25 +43,57 @@ exports.up = function(knex, Promise) {
       table.timestamps();
     }),
 
-    knex.schema.createTable('types', function(table){
+    knex.schema.createTable('types', (table) => {
       table.increments('id').primary();
-      table.string('name');
+      table.string('name')
+        .unique()
+        .nullable(false);
     }),
 
-    knex.schema.createTable('categories', function(table){
+    knex.schema.createTable('categories', (table) => {
       table.increments('id').primary();
-      table.string('name');
+      table.string('name')
+        .unique()
+        .nullable(false);
     }),
+
+    knex.schema.createTable('shared_lists', (table) => {
+      table.integer('user_id')
+        .references('id')
+        .inTable('users');
+      table.integer('list_id')
+        .references('id')
+        .inTable('lists');
+    }),
+
+    knex.schema.createTable('lists_stores', (table) => {
+      table.integer('list_id')
+        .references('id')
+        .inTable('lists');
+      table.integer('store_id')
+        .references('id')
+        .inTable('stores');
+    }),
+
+    knex.schema.createTable('stores_categories', (table) => {
+      table.integer('store_id')
+        .references('id')
+        .inTable('stores');
+      table.integer('category_id')
+        .references('id')
+        .inTable('categories');
+    })
   ])
       
 };
 
-exports.down = function(knex, Promise) {
-  return Promise.all([
-    knex.schema.dropTable('users'),
-    knex.schema.dropTable('lists'),
-    knex.schema.dropTable('stores'),
-    knex.schema.dropTable('types'),
-    knex.schema.dropTable('categories')
-  ])
+exports.down = (knex, Promise) => {
+  return knex.schema.dropTable('users')
+    .dropTable('lists')
+    .dropTable('stores')
+    .dropTable('types')
+    .dropTable('categories')
+    .dropTable('shared_lists')
+    .dropTable('lists_stores')
+    .dropTable('stores_categories');
 };

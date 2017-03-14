@@ -1,43 +1,29 @@
-const knex = require('knex')({
-  client: 'postgresql',
-  connection: {
-    host     : '127.0.0.1',
-    port     : 8080,
-    user     : 'cnc',
-    password : 'cups',
-    database : 'tripwreckTest',
-    // host     : process.env.SERVER_IP,
-    // port     : process.env.SERVER_PORT,
-    // user     : process.env.PG_USER,
-    // password : process.env.PG_PASSWORD,
-    // database : process.env.PG_DB_NAME,
-    charset : 'UTF8_GENERAL_CI'
-  }
-});
-
+const knex = require('./db');
 const bookshelf = require('bookshelf')(knex);
-bookshelf.plugin("visibility");
+bookshelf.plugin('registry');
 
 module.exports = {
   User: bookshelf.Model.extend({
     // Bookshelf assumes that table names are plurals 
-    tableName: "users",
-    list: function() {
-      // and that the foreignkey is the singular name of the related table fixed with _id
-      // one-to-many
-      this.hasMany(List, "list_id");
-    }
+    // and that the foreign key is the singular name of the related table fixed with _id
+    tableName: "users"
   }),
+
   List: bookshelf.Model.extend({
-    tableName: "lists",
-    created_by: function() {
-      // one-to-many
-      return this.belongsTo(User, "user_id");
-    }
+    tableName: "lists"
   }),
+
+  Store: bookshelf.Model.extend({
+    tableName: "stores"
+  }),
+
+  Type: bookshelf.Model.extend({
+    tableName: "types"
+  }),
+
+  Category: bookshelf.Model.extend({
+    tableName: "categories"
+  }),
+
   Bookshelf: bookshelf
 }
-
-// Customers.collection().fetch().then(function (collection) {
-//   console.log(collection);
-// });

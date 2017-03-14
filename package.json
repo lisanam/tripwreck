@@ -2,7 +2,7 @@
   "name": "tripwreck",
   "version": "1.0.0",
   "description": "trip assistance",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server/server.js",
     "test": "mocha"
