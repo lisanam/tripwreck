@@ -69,7 +69,7 @@ describe('Server', function() {
             var reviews = res.body;
             expect(reviews).to.have.length.of.at.least(1); 
             expect(reviews[0]).to.have.all.keys([
-              'rating', 'user', 'text', 
+              'zomato_id', 'rating', 'user', 'text', 
               'likes', 'timestamp', 'friendly_time'
             ]);
             done();
