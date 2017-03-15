@@ -4,10 +4,10 @@ const listControllers = require('../controllers/listControllers.js');
 
 listRouter.route('/')
   .post(listControllers.addList)
-  .get(listControllers.getLists)
+  .get(listControllers.getList)
   .put(listControllers.updateList)
   .delete(listControllers.deleteList)
 
-listRouter.post('/send', listControllers.sendList)
+listRouter.get('/all', listControllers.getLists);
 
 module.exports = listRouter;
