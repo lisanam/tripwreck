@@ -1,3 +1,5 @@
+const Collections = require('../../database/collections');
+const Models = require('../../database/models');
 
 module.exports = {
   addList: function(req, res) {
