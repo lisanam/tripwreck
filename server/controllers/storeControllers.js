@@ -104,7 +104,7 @@ module.exports = {
       var results = JSON.parse(data).restaurants.map((restaurant) => {
         return getResturantInfo(restaurant.restaurant, location);
       });
-      res.send(200, results);
+      res.status(200).send(results);
     }).end();
 
   }),
@@ -136,7 +136,7 @@ module.exports = {
           friendly_time: review.review_time_friendly
         }
       });
-      res.send(200, results);
+      res.status(200).send(results);
     }).end();
   }
 };

@@ -37,8 +37,8 @@ app.get('*', function (req, res) {
   res.sendFile(path.join(__dirname, '..', 'public/index'));
 });
 
-app.listen(4567, function () {
-  console.log('TripWreck is running on port 4567!');
+app.listen(process.env.SERVER_PORT, function () {
+  console.log(`TripWreck is running on port ${process.env.SERVER_PORT}!`);
 });
 
 module.exports = app;

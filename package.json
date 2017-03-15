@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server/server.js",
-    "test": "mocha"
+    "test": "mocha tests/server/"
   },
   "repository": "git+https://github.com/CupNCup/tripwreck.git",
   "keywords": [
@@ -23,7 +23,8 @@
     "enzyme": "^2.7.1",
     "jsdom": "^9.9.1",
     "mocha": "^3.2.0",
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0"
   },
   "dependencies": {
     "async": "^2.1.5",

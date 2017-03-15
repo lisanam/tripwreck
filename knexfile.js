@@ -1,4 +1,10 @@
 module.exports = {
+  test: {
+    client: 'postgresql',
+    connection: {
+      database: 'tripwreck_test'
+    }
+  },
   development: {
     client: 'postgresql',
     connection: {
