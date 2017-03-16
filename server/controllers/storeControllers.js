@@ -1,11 +1,13 @@
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+//used in HTTP request to API
 const request = require('request');
 
-//cache
-const LRU = require("lru-cache");
-const locationCache = LRU(100);
+//Node v7 do not support async/await
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
+//cache location data
+const LRU = require("lru-cache");
+const locationCache = LRU(500);
 
 //Zomato HTTP request options
 const HTTPOptions = {
@@ -95,8 +97,7 @@ module.exports = {
     if (!location) {
       //make HTTP request to get location
       location = await (findLocation(city));
-      //cache searched location
-      locationCache.set(city, location);
+      var needsLocationCaching = true;
     }
     city_id = location.city_id;
 
@@ -121,6 +122,11 @@ module.exports = {
         return getResturantInfo(restaurant.restaurant, location);
       });
       res.status(200).send(results);
+
+      //cache searched location if needed
+      if(needsLocationCaching) {
+        locationCache.set(city, location);
+      }
     }).end();
 
   }),
@@ -154,6 +160,8 @@ module.exports = {
         }
       });
       res.status(200).send(results);
+
+      //move caching to here;
     }).end();
   }
 };

@@ -19,11 +19,12 @@ exports.up = (knex, Promise) => {
         .defaultTo('New List')
         .nullable(false);
       table.text('description');
-      table.string('city');
       table.integer('user_id')
         .references('id')
         .inTable('users')
         .nullable(false);
+      table.string('user_name');
+      table.string('city');
       table.timestamps();
     }),
 
