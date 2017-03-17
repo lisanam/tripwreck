@@ -121,6 +121,31 @@ Collections.Stores.prototype.addNew = async((store) => {
   });
 })
 
+//find store_id and make new store if needed
+Collections.Stores.prototype.findStoreId = async((store) => {
+  return new Promise((resolve, reject) => {
+    Collections.Stores
+      .query({ where: {
+        name: store.name,
+        location: store.location
+      }})
+      .fetchOne()
+      .then((store_info) => {
+        if(stores.info) {
+          resolve(store_info.id);
+        }
+
+        //make new store if type doesn't exist
+        var newStore = await(Collections.Stores.addNew(store));
+        resolve(newStore.id);
+        
+      })
+      .catch((err) => {
+        reject('cannot query store collection ' + err);
+      });
+  });
+});
+
 
 
 module.exports = Collections;

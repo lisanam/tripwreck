@@ -17,68 +17,68 @@ const addListExample = require('../examples/addList');
 
 
 describe('Server', function() {
-  describe('Store controllers', function () {
-    describe('Search', function() {
-      it('should return search results', function (done) {
-        request
-          .get('/store/search?city=NewYork&keyword=food')
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
+  // describe('Store controllers', function () {
+  //   describe('Search', function() {
+  //     it('should return search results', function (done) {
+  //       request
+  //         .get('/store/search?city=NewYork&keyword=food')
+  //         .expect(200)
+  //         .end(function(err, res) {
+  //           if (err) {
+  //             throw err;
+  //           }
 
-            var results = res.body;
-            expect(results).to.have.length.above(5); 
-            expect(results[0]).to.have.property('zomato_id');
-            expect(results[0]).to.have.property('name');
-            expect(results[0].location).to.have.lengthOf(2);
-            expect(results[0].address).to.have.lengthOf(6);
-            done();
-          });
-      });
+  //           var results = res.body;
+  //           expect(results).to.have.length.above(5); 
+  //           expect(results[0]).to.have.property('zomato_id');
+  //           expect(results[0]).to.have.property('name');
+  //           expect(results[0].location).to.have.lengthOf(2);
+  //           expect(results[0].address).to.have.lengthOf(6);
+  //           done();
+  //         });
+  //     });
 
-      it('should find store\'s location when searched', function (done) {
-        request
-          .get('/store/search?city=NewYork&keyword=food')
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
+  //     it('should find store\'s location when searched', function (done) {
+  //       request
+  //         .get('/store/search?city=NewYork&keyword=food')
+  //         .expect(200)
+  //         .end(function(err, res) {
+  //           if (err) {
+  //             throw err;
+  //           }
 
-            var result = res.body[0].address;
-            expect(result[2]).to.have.string('New York');
-            expect(result[3]).to.have.lengthOf(2);
-            expect(Number(result[4])).to.be.closeTo(10000, 50);
-            expect(result[5]).to.equal('United States');
-            done();
-          });
-      });
-    });
+  //           var result = res.body[0].address;
+  //           expect(result[2]).to.have.string('New York');
+  //           expect(result[3]).to.have.lengthOf(2);
+  //           expect(Number(result[4])).to.be.closeTo(10000, 50);
+  //           expect(result[5]).to.equal('United States');
+  //           done();
+  //         });
+  //     });
+  //   });
 
-    describe('Reviews', function() {
-      it('should return reviews of a store', function (done) {
-        request
-          .get('/store/reviews?zomato_id=16843649')
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
+  //   describe('Reviews', function() {
+  //     it('should return reviews of a store', function (done) {
+  //       request
+  //         .get('/store/reviews?zomato_id=16843649')
+  //         .expect(200)
+  //         .end(function(err, res) {
+  //           if (err) {
+  //             throw err;
+  //           }
 
-            var reviews = res.body;
-            expect(reviews).to.have.length.of.at.least(1); 
-            expect(reviews[0]).to.have.all.keys([
-              'zomato_id', 'rating', 'user', 'text', 
-              'likes', 'timestamp', 'friendly_time'
-            ]);
-            done();
-          });
-      });
-    });
+  //           var reviews = res.body;
+  //           expect(reviews).to.have.length.of.at.least(1); 
+  //           expect(reviews[0]).to.have.all.keys([
+  //             'zomato_id', 'rating', 'user', 'text', 
+  //             'likes', 'timestamp', 'friendly_time'
+  //           ]);
+  //           done();
+  //         });
+  //     });
+  //   });
 
-  });
+  // });
 
   describe('List controllers', function () {
     describe('AddList', function() {
