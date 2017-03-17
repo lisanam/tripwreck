@@ -24,11 +24,11 @@ app.use(bodyParser.json());
 
 //Routers
 // const userRouter = require('./routers/userRouter.js');
-// const listRouter = require('./routers/listRouter.js');
+const listRouter = require('./routers/listRouter.js');
 const storeRouter = require('./routers/storeRouter.js');
 
 // app.use('/user', userRouter);
-// app.use('/list', listRouter);
+app.use('/list', listRouter);
 // app.use('/lists', listRouter);
 app.use('/store', storeRouter);
 

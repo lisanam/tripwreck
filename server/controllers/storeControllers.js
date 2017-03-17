@@ -1,6 +1,13 @@
-var async = require('asyncawait/async');
-var await = require('asyncawait/await');
-var request = require('request');
+//used in HTTP request to API
+const request = require('request');
+
+//Node v7 do not support async/await
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
+
+//cache location data
+const LRU = require("lru-cache");
+const locationCache = LRU(500);
 
 //Zomato HTTP request options
 const HTTPOptions = {
@@ -80,10 +87,20 @@ const getResturantInfo = function(info, location) {
 module.exports = {
   getSearchResults: async (function(req, res) {
 
-    // find city_id defaults to 280(New York City)
-    var city = req.query.city;
-    var location = await (findLocation(city));
-    var city_id = location.city_id || 280;
+    //city name defaults to New York City
+    var city = req.query.city || 'New York City';
+
+    //find location with city name
+    //get cached location
+    var location = locationCache.get(city);
+    //if city is not in cache
+    if (!location) {
+      //make HTTP request to get location
+      location = await (findLocation(city));
+      var needsLocationCaching = true;
+    }
+    city_id = location.city_id;
+
     // search keyword defaults to ''
     var keyword = req.query.keyword || '';
 
@@ -105,6 +122,11 @@ module.exports = {
         return getResturantInfo(restaurant.restaurant, location);
       });
       res.status(200).send(results);
+
+      //cache searched location if needed
+      if(needsLocationCaching) {
+        locationCache.set(city, location);
+      }
     }).end();
 
   }),
@@ -128,6 +150,7 @@ module.exports = {
       var results = reviews.map((review) => {
         review = review.review;
         return {
+          zomato_id: zomato_id,
           rating: review.rating,
           user: review.user.name,
           text: review.review_text,
@@ -137,6 +160,8 @@ module.exports = {
         }
       });
       res.status(200).send(results);
+
+      //move caching to here;
     }).end();
   }
 };

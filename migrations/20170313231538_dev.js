@@ -1,7 +1,7 @@
 
 exports.up = (knex, Promise) => {
   return Promise.all([
-    knex.schema.createTable('users', (table) => {
+    knex.schema.createTableIfNotExists('users', (table) => {
       table.increments('id').primary();
       table.string('auth_id')
         .unique()
@@ -13,28 +13,29 @@ exports.up = (knex, Promise) => {
       table.timestamps();
     }),
 
-    knex.schema.createTable('lists', (table) => {
+    knex.schema.createTableIfNotExists('lists', (table) => {
       table.increments('id').primary();
       table.string('title')
         .defaultTo('New List')
         .nullable(false);
       table.text('description');
-      table.string('city');
       table.integer('user_id')
         .references('id')
         .inTable('users')
         .nullable(false);
+      table.string('user_name');
+      table.string('city');
       table.timestamps();
     }),
 
-    knex.schema.createTable('stores', (table) => {
+    knex.schema.createTableIfNotExists('stores', (table) => {
       table.increments('id').primary();
       table.string('name')
         .nullable(false);
       table.integer('phone').unique();
       table.specificType('location', 'jsonb[]');
       table.specificType('address', 'jsonb[]');
-      table.string('zomato_id');
+      table.string('zomato_id').unique();
       table.string('thumb');
       table.integer('price');
       table.integer('type_id')
@@ -43,21 +44,21 @@ exports.up = (knex, Promise) => {
       table.timestamps();
     }),
 
-    knex.schema.createTable('types', (table) => {
+    knex.schema.createTableIfNotExists('types', (table) => {
       table.increments('id').primary();
       table.string('name')
         .unique()
         .nullable(false);
     }),
 
-    knex.schema.createTable('categories', (table) => {
+    knex.schema.createTableIfNotExists('categories', (table) => {
       table.increments('id').primary();
       table.string('name')
         .unique()
         .nullable(false);
     }),
 
-    knex.schema.createTable('shared_lists', (table) => {
+    knex.schema.createTableIfNotExists('shared_lists', (table) => {
       table.integer('user_id')
         .references('id')
         .inTable('users');
@@ -66,7 +67,7 @@ exports.up = (knex, Promise) => {
         .inTable('lists');
     }),
 
-    knex.schema.createTable('lists_stores', (table) => {
+    knex.schema.createTableIfNotExists('lists_stores', (table) => {
       table.integer('list_id')
         .references('id')
         .inTable('lists');
@@ -75,7 +76,7 @@ exports.up = (knex, Promise) => {
         .inTable('stores');
     }),
 
-    knex.schema.createTable('stores_categories', (table) => {
+    knex.schema.createTableIfNotExists('stores_categories', (table) => {
       table.integer('store_id')
         .references('id')
         .inTable('stores');
@@ -88,12 +89,12 @@ exports.up = (knex, Promise) => {
 };
 
 exports.down = (knex, Promise) => {
-  return knex.schema.dropTable('users')
-    .dropTable('lists')
-    .dropTable('stores')
-    .dropTable('types')
-    .dropTable('categories')
-    .dropTable('shared_lists')
-    .dropTable('lists_stores')
-    .dropTable('stores_categories');
+  return knex.schema.dropTableIfExists('users')
+    .dropTableIfExists('lists')
+    .dropTableIfExists('stores')
+    .dropTableIfExists('types')
+    .dropTableIfExists('categories')
+    .dropTableIfExists('shared_lists')
+    .dropTableIfExists('lists_stores')
+    .dropTableIfExists('stores_categories');
 };

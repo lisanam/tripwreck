@@ -2,7 +2,8 @@ const Collections = require('../../database/collections');
 const Models = require('../../database/models');
 
 module.exports = {
-  addList: function(req, res) {   
+  addList: function(req, res) {
+    console.log(req.body)
   },
   getList: function(req, res) {
   },
