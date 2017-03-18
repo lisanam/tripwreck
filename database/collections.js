@@ -1,3 +1,4 @@
+const knex = require("./db.js");
 const Models = require("./models.js");
 
 //Node v7 do not support async/await
@@ -27,12 +28,15 @@ const Collections = {
 };
 
 //Custom function for Collections
-  //Needs to be used with async/await
+  //can be used with async/await
+  //name is always in lowercase
 
 //find type_id and make new type if it does not exist
-Collections.Types.prototype.findTypeId = (type_name) => {
+Collections.Types.prototype.findOrCreateId = (typeName) => {
+  typeName = typeName.trim().toLowerCase();
   return new Promise((resolve, reject) => {
-    this.query({where: {name: type_name}})
+    Collections.Types
+      .query({where: {name: typeName}})
       .fetchOne()
       .then((type) => {
         if(type) {
@@ -40,7 +44,7 @@ Collections.Types.prototype.findTypeId = (type_name) => {
         }
 
         //make new type if type doesn't exist
-        new Models.Type({name: type_name})
+        new Models.Type({name: typeName})
           .save()
           .then((type) => {
             resolve(type.id);
@@ -55,37 +59,96 @@ Collections.Types.prototype.findTypeId = (type_name) => {
   });
 }
 
+//find category_id and make new category if it does not exist
+Collections.Categories.prototype.findOrCreateId = (categoryName) => {
+  categoryName = categoryName.trim().toLowerCase();
+  return new Promise((resolve, reject) => {
+    Collections.Categories
+      .query({where: {name: categoryName}})
+      .fetchOne()
+      .then((category) => {
+        if(category) {
+          resolve(category.id);
+        }
+
+        //make new category if category doesn't exist
+        new Models.Category({name: categoryName})
+          .save()
+          .then((category) => {
+            resolve(category.id);
+          })
+          .catch((err) => {
+            reject('cannot create new Category Model ' + err);
+          });
+      })
+      .catch((err) => {
+        reject('cannot query Categories Collection ' + err);
+      });
+  });
+}
+
 //find category_ids and make new categories if it does not exist
-//TODO
-  //finish this function
-Collections.Categories.prototype.findCategoryIds = (categoryArr) => {
-  // console.log('this', this)
-  // return new Promise((resolve, reject) => {
-  //   this.query({where: {name: categoryArr}})
-  //     .fetch()
-  //     .then((categories) => {
-  //       if(categories.length === categoryArr.length) {
-  //         resolve(categories);
-  //       }
-
-  //       var models = categoryArr.map((category) => {
-  //         return {name: category.name};
-  //       })
-
-  //       // const Categories = Models.Bookshelf.Collection.Categories;
-  //       console.log('Categories', Categories);
-  //       Categories.add(models)
-  //         .then((collection) => {
-  //           resolve(collection);
-  //         })
-  //         .catch((err) => {
-  //           reject('cannot create new Category Model ' + err);
-  //         })
-  //     })
-  //     .catch((err) => {
-  //       reject('cannot query Categories Collection ' + err);
-  //     });
-  // });
+Collections.Categories.prototype.findOrCreateIds = (categoryArr) => {
+  categoryArr = categoryArr.map((categoryName) => {
+    //remove spaces and lowercase category names
+    return categoryName.trim().toLowerCase();
+  })
+  return new Promise((resolve, reject) => {
+    knex.select('id').from('categories').whereIn('name', categoryArr)
+      .then((ids) => {
+        ids = ids.map((id) => {
+          return id.id;
+        })
+        if(ids.length === categoryArr.length) {
+          resolve(ids);
+        }
+        //Create tempory table with category names
+        knex.raw('CREATE TABLE temp (name varchar(255));')
+          .then((table) => {
+            var categoryNames = `('${categoryArr.join("'),('")}')`;
+            knex.raw(`INSERT INTO temp (name) VALUES ${categoryNames};`)
+              .then(() => {
+                //select category names that doesn't exist in categories table
+                knex.select('name').from('temp')
+                .whereRaw('name NOT IN(SELECT name FROM categories)')
+                .then((names)=> {
+                  //Drop temp table
+                  knex.raw('DROP TABLE temp;')
+                    .then(() => {
+                      //make new categories that doesn't exist
+                      var newCategories = Collections.Categories.forge(names);
+                      newCategories.invokeThen('save')
+                        .then((newCategories) => {
+                          //get ids of newCategories
+                          newCategories.forEach((idObj) => {
+                            ids.push(idObj.id);
+                          })
+                          resolve(ids);
+                        })
+                        .catch((err) => {
+                          resolve("cannot create new categories " + err);
+                        })
+                    })
+                    .catch((err) => {
+                      resolve("cannot drop temp table " + err);
+                    })
+                })
+                .catch((err) => {
+                  resolve("cannot select names that doesn't exist in categories table" + err);
+                });
+              })
+              .catch((err) => {
+                resolve("cannot insert into temp table " + err);
+              });
+          })
+          .catch((err) => {
+            resolve("cannot create temp table " + err);
+          });
+      })
+      .catch((err) => {
+        resolve("cannot select from categories " + err);
+      });
+  });
 }
 
 //add new store in database with store obj from client
@@ -95,21 +158,21 @@ Collections.Categories.prototype.findCategoryIds = (categoryArr) => {
       //if exist get id
       //else make new category
     //attach category_ids
-Collections.Stores.prototype.addNew = async((store) => {
+Collections.Stores.prototype.addNew = async((storeInfo) => {
   return new Promise((resolve, reject) => {
     //get type_id from type_name
     var Types = new Collections.Types();
-    var type_id = await(Types.findTypeId(store.type));
+    var type_id = await(Types.findTypeId(storeInfo.type));
     
-    //make new store model with store info
+    //make new store model with storeInfo
     new Models.Store({
-      name: store.name,
-      zomato_id: store.zomato_id,
-      location: store.location,
+      name: storeInfo.name,
+      zomato_id: storeInfo.zomato_id,
+      location: storeInfo.location,
       //change JSON/javascript array to postgres array
-      address: [JSON.stringify(store.address)],
-      thumb: store.thumb,
-      price: store.price,
+      address: [JSON.stringify(storeInfo.address)],
+      thumb: storeInfo.thumb,
+      price: storeInfo.price,
       type_id: type_id
     }).save()
       .then((store) => {
@@ -122,21 +185,20 @@ Collections.Stores.prototype.addNew = async((store) => {
 })
 
 //find store_id and make new store if needed
-Collections.Stores.prototype.findStoreId = async((store) => {
+Collections.Stores.prototype.findOrCreateId = async((storeInfo) => {
   return new Promise((resolve, reject) => {
-    Collections.Stores
-      .query({ where: {
-        name: store.name,
-        location: store.location
+    Collections.Stores.query({ where: {
+        name: storeInfo.name,
+        location: storeInfo.location
       }})
       .fetchOne()
-      .then((store_info) => {
-        if(stores.info) {
-          resolve(store_info.id);
+      .then((store) => {
+        if(store) {
+          resolve(store.id);
         }
 
         //make new store if type doesn't exist
-        var newStore = await(Collections.Stores.addNew(store));
+        var newStore = await(Collections.Stores.addNew(storeInfo));
         resolve(newStore.id);
         
       })
