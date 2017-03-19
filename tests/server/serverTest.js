@@ -12,8 +12,17 @@ const request = supertest.agent(server);
 //change environment variable so it will use test server & database
 process.env.SERVER_PORT=3000;
 process.env.DB_ENV = 'test';
+// const dbConnection = function() {
+//   var dbConnection = mysql.createConnection({
+//     user: 'ecstaticeels',
+//     password: 'cool',
+//     database: 'iRemember'
+//   });
+//   dbConnection.connect();
+//   return dbConnection;
+// }
 
-const addListExample = require('../examples/addList');
+const addListExample = require('../../database/seeds/examples/addList');
 
 
 describe('Server', function() {
@@ -81,11 +90,18 @@ describe('Server', function() {
   // });
 
   describe('List controllers', function () {
-    describe('AddList', function() {
+    describe('Add List', function() {
       it('should add new list', function (done) {
         request
           .post('/list')
-          .send({list: addListExample})
+          .send({
+            title: 'List Title',
+            userId: 1,
+            userName: 'Lisa',
+            description: 'This is description',
+            city: 'New York City',
+            list: addListExample
+          })
           .expect(201)
           .end(function(err, res) {
             if (err) {
@@ -97,6 +113,7 @@ describe('Server', function() {
             done();
           });
       });
+    });
 
     //   it('should find store\'s location when searched', function (done) {
     //     request
@@ -117,25 +134,19 @@ describe('Server', function() {
     //   });
     // });
 
-    // describe('Reviews', function() {
-    //   it('should return reviews of a store', function (done) {
-    //     request
-    //       .get('/store/reviews?zomato_id=16843649')
-    //       .expect(200)
-    //       .end(function(err, res) {
-    //         if (err) {
-    //           throw err;
-    //         }
-
-    //         var reviews = res.body;
-    //         expect(reviews).to.have.length.of.at.least(1); 
-    //         expect(reviews[0]).to.have.all.keys([
-    //           'zomato_id', 'rating', 'user', 'text', 
-    //           'likes', 'timestamp', 'friendly_time'
-    //         ]);
-    //         done();
-    //       });
-    //   });
+    describe('Delete List', function() {
+       it('should delete a list', function (done) {
+        request
+          .delete('/list')
+          .send({listId: 46})
+          .expect(200)
+          .end(function(err, res) {
+            if (err) {
+              throw err;
+            }
+            done();
+          });
+      });
     });
   });
 });

@@ -6,55 +6,79 @@ const Models = require('../../database/models');
 const async = require('asyncawait/async');
 const await = require('asyncawait/await');
 
-var list = require('../../database/seeds/examples/addList')
-
-//Helper function - find array of category_ids and make new category if needed
-const addCategoryIds = (categoryArr) => {
-  return new Promise((resolve, reject) => {
-    Collections.Categories
-      .query({
-        whereIn: ['name', categoryArr]
-      })
-      .fetch()
-      .then((categories) => {
-        var category_ids = categories.map((category) => {
-          return category.id;
-        })
-        
-        if(categories.length >= categoryArr.length) {
-          resolve(category_ids);
-        }
-        var models = categoryArr.map((category) => {
-          return {name: category.trim()};
-        });
-
-        var categories = Collections.Categories.forge(models);
-
-        categories.invokeThen('save')
-          .then((collection) => {
-            //get category_ids of newly added categories
-            category_ids = collection.map((category) => {
-              return category.id;
-            })
-            resolve(category_ids);
-          })
-          .catch((err) => {
-            reject('cannot create new Category Model ' + err);
-          })
-
-      })
-      .catch((err) => {
-        reject('cannot query categories ' + err);
-      });
-  });
-}
-
+var list = require('../../database/seeds/examples/addList');
 
 module.exports = {
   addList: async(function(req, res) {
-    // var list = req.body.list;
+    var data = req.body;
+    var list = data.list;
 
-    // var Types = new Collections.Types();
+    //find storeIds
+    var Stores = new Collections.Stores();
+    var storeIds = await(Stores.findOrCreateIds(list));
+    console.log('storeIds', storeIds)
+    //make new list
+    new Models.List({
+      title: data.title,
+      user_id: data.userId,
+      user_name: data.userName,
+      description: data.description,
+      city: data.city
+    }).save()
+      .then((list) => {
+        console.log('list', list, 'storeIds', storeIds)
+        
+        //add list_id and store_id to lists_stores table
+          //use attach instead raw sql
+        // list.stores().attach({storeIds})
+        storeIds = storeIds.map((storeId) => {
+          return `${list.id},${storeId}`
+        })
+        var query = `insert into lists_stores (list_id, store_id) values (${storeIds.join("),(")});`;
+        Models.Bookshelf.knex.raw(query)
+          .then(() => {
+            res.status(201).send();
+          })
+          .catch((err) => {
+            console.log("cannot attach storeIds to list " + err);
+          });
+      })
+      .catch((err) => {
+        console.log("cannot create new list " + err);
+      })
+
+  }),
+  getList: function(req, res) {
+    var listId = req.body.listId;
+
+
+  },
+  getLists: function(req, res) {
+  },
+  updateList: function(req, res) {
+  },
+  deleteList: function(req, res) {
+    var listId = req.body.listId;
+    //delete all relations list has in lists_stores table
+    //use detach
+    Models.Bookshelf.knex('lists_stores').where('list_id', listId).del()
+      .then(() => {
+        //delete the list
+        Models.Bookshelf.knex('lists').where('id', listId).del()
+          .then(() => {
+            res.status(200);
+          })
+          .catch((err) => {
+            console.log("cannot delete from lists " + err);
+          })
+      })
+      .catch((err) => {
+        console.log("cannot delete from lists_stores " + err);
+      })
+  },
+};
+
+// var Types = new Collections.Types();
     // var id = await(Types.findOrCreateId('shopping'));
     // console.log('type_id', id);
 
@@ -66,33 +90,7 @@ module.exports = {
     // var result = await(Stores.addNew(list[0]));
     // console.log('new Store', result);
 
-    var Categories = new Collections.Categories();
-    var id = await(Categories.findOrCreateId('Cake'));
-    var ids = await(Categories.findOrCreateIds([ 'Desserts', ' Japanese', ' Korean' ]));
-    console.log('id', id, ids)
-
-    // new Models.User({auth_id: '123456'})
-    //   .fetch()
-    //   .then(function(user) {
-    //       console.log('user', user)
-    //       // Collections.Users.query()
-    //       //   .whereIn('auth_id', '123456').del()
-    //       //   .then((user) => {
-    //       //     console.log(user, 'deleted')
-    //       //   })
-    //       return user.addList('1');
-    //   });
-
-          res.status(201).send();
-  }),
-  getList: function(req, res) {
-  },
-  getLists: function(req, res) {
-  },
-  updateList: function(req, res) {
-  },
-  deleteList: function(req, res) {
-    var listId = req.body.listId;
-
-  },
-};
+    // var Categories = new Collections.Categories();
+    // var id = await(Categories.findOrCreateId('Cake'));
+    // var ids = await(Categories.findOrCreateIds([ 'Desserts', ' Japanese', ' Korean' ]));
+    // console.log('id', id, ids)
