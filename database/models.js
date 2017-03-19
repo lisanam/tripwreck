@@ -9,7 +9,7 @@ const Models = {
     tableName: "users",
     hasTimestamps: true,
     lists: function() {
-      return this.belongsToMany(Models.List).through(Models.SharedList);
+      return this.belongsToMany(Models.List, 'shared_lists');
     }
   }),
 
@@ -17,51 +17,57 @@ const Models = {
     tableName: "lists",
     hasTimestamps: true,
     users: function() {
-      return this.belongsToMany(Models.User).through(Models.SharedList)
+      return this.belongsToMany(Models.User, 'shared_lists');
     },
     stores: function() {
-      return this.belongsToMany(Models.Store).through(Models.Lists_Stores);
+      return this.belongsToMany(Models.Store, 'lists_stores');
     }
   }),
 
   Store: bookshelf.Model.extend({
     tableName: "stores",
     lists: function() {
-      return this.belongsToMany(Models.List).through(Models.Lists_Stores);
+      return this.belongsToMany(Models.List, 'lists_stores');
     },
     categories: function() {
-      return this.belongsToMany(Models.Category).through(Models.Store_Categories);
+      return this.belongsToMany(Models.Category, 'stores_categories');
+    },
+    type: function() {
+      return this.belongsTo(Models.Type);
     }
   }),
 
   Type: bookshelf.Model.extend({
-    tableName: "types"
+    tableName: "types",
+    stores: function() {
+      return this.hasMany(Models.Store);
+    }
   }),
 
   Category: bookshelf.Model.extend({
     tableName: "categories",
     stores: function() {
-      return this.belongsToMany(Models.Store).through(Models.Stores_Categories);
+      return this.belongsToMany(Models.Store, 'stores_categories');
     }
   }),
 
-  SharedList: bookshelf.Model.extend({
-    tableName: "shared_lists"
-  }),
+  // SharedList: bookshelf.Model.extend({
+  //   tableName: "shared_lists"
+  // }),
 
-  Lists_Stores: bookshelf.Model.extend({
-    tableName: "lists_stores",
+  // Lists_Stores: bookshelf.Model.extend({
+  //   tableName: "lists_stores",
     // list_id: function() {
     //     return this.hasMany(List);
     // },
     // store_id: function() {
     //     return this.hasMany(Store);
     // }
-  }),
+  // }),
 
-  Stores_Categories: bookshelf.Model.extend({
-    tableName: "stores_categories"
-  }),
+  // Stores_Categories: bookshelf.Model.extend({
+  //   tableName: "stores_categories"
+  // }),
 
   Bookshelf: bookshelf
 }

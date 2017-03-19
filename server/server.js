@@ -29,7 +29,6 @@ const storeRouter = require('./routers/storeRouter.js');
 
 // app.use('/user', userRouter);
 app.use('/list', listRouter);
-// app.use('/lists', listRouter);
 app.use('/store', storeRouter);
 
 //Serve index.html at every other route that comes to server

@@ -90,30 +90,30 @@ describe('Server', function() {
   // });
 
   describe('List controllers', function () {
-    describe('Add List', function() {
-      it('should add new list', function (done) {
-        request
-          .post('/list')
-          .send({
-            title: 'List Title',
-            userId: 1,
-            userName: 'Lisa',
-            description: 'This is description',
-            city: 'New York City',
-            list: addListExample
-          })
-          .expect(201)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
+    // describe('Add List', function() {
+    //   it('should add new list', function (done) {
+    //     request
+    //       .post('/list')
+    //       .send({
+    //         title: 'List Title',
+    //         userId: 1,
+    //         userName: 'Lisa',
+    //         description: 'This is description',
+    //         city: 'New York City',
+    //         list: addListExample
+    //       })
+    //       .expect(201)
+    //       .end(function(err, res) {
+    //         if (err) {
+    //           throw err;
+    //         }
 
-            var results = res.body;
-            console.log(results)
-            done();
-          });
-      });
-    });
+    //         var results = res.body;
+    //         console.log(results)
+    //         done();
+    //       });
+    //   });
+    // });
 
     //   it('should find store\'s location when searched', function (done) {
     //     request
@@ -134,11 +134,43 @@ describe('Server', function() {
     //   });
     // });
 
+    describe('Get List', function() {
+       it('should get a list', function (done) {
+        request
+          .get('/list')
+          .send({listId: 7})
+          .expect(200)
+          .end(function(err, res) {
+            if (err) {
+              throw err;
+            }
+            // console.log(JSON.stringify(res.body))
+            done();
+          });
+      });
+    });
+
+    describe('Get Lists', function() {
+       it('should get a list', function (done) {
+        request
+          .get('/list/all')
+          .send({userId: 1})
+          .expect(200)
+          .end(function(err, res) {
+            if (err) {
+              throw err;
+            }
+            console.log(res.body)
+            done();
+          });
+      });
+    });
+
     describe('Delete List', function() {
        it('should delete a list', function (done) {
         request
           .delete('/list')
-          .send({listId: 46})
+          .send({listId: 6})
           .expect(200)
           .end(function(err, res) {
             if (err) {

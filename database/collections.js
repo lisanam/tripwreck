@@ -32,17 +32,32 @@ const Collections = {
   //name is always in lowercase
 
 // Users
-// getMyLists: function(){
-//   var user_id = this.get('user_id');
-//   Collections.Lists.fetchAll({user_id: user_id})
-//     .then((lists) => {
-//       console.log(lists);
-//     })
-// },
+Collections.Users.prototype.getMyLists = (userId) => {
+  return new Promise((resolve, reject) => {
+    Collections.Lists
+      .query({where: {user_id: userId}})
+      .fetch()
+      .then((lists) => {
+        resolve(lists);
+      })
+      .catch((err) => {
+        reject("cannot query lists collection with user_id " + err);
+      })
+  });
+},
 
-// getSharedLists: function() {
-
-// },
+Collections.Users.prototype.getSharedLists = (userId) => {
+  return new Promise((resolve, reject) => {
+    knex.select('list_id').from('shared_lists').where('user_id', userId)
+      .then((lists) => {
+        console.log(lists)
+        resolve(lists);
+      })
+      .catch((err) => {
+        reject("cannot get list_ids from shared_lists table " + err);
+      })
+  });
+},
 
 // addList: function(list_id) {
 //   console.log('added', this);
@@ -187,6 +202,12 @@ Collections.Categories.prototype.findOrCreateIds = (categoryArr) => {
 //       });
 //   }
 
+Collections.Stores.prototype.getInfos = async((storeIds) => {
+  return new Promise((resolve, reject) => {
+    
+  });
+}),
+
 //add new store in database with storeInfo from client
 Collections.Stores.prototype.addNew = async((storeInfo) => {
   return new Promise((resolve, reject) => {
@@ -210,14 +231,14 @@ Collections.Stores.prototype.addNew = async((storeInfo) => {
       type_id: type_id
     }).save()
       .then((store) => {
-        // use attach instead of raw sql 
-        // store.categories().attach(category_ids)
-        console.log(category_ids)
-        category_ids = category_ids.map((category_id) => {
-          return `${store.id},${category_id}`
-        })
-        var query = `insert into stores_categories (store_id, category_id) values (${category_ids.join("),(")});`;
-        knex.raw(query)
+        //attach in knex
+          // category_ids = category_ids.map((category_id) => {
+          //   return `${store.id},${category_id}`
+          // })
+          // var query = `insert into stores_categories (store_id, category_id) values (${category_ids.join("),(")});`;
+          // knex.raw(query)
+
+        store.categories().attach(category_ids)
           .then((store) => {
             resolve(store.id);
           })

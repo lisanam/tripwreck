@@ -1,6 +1,7 @@
 //Database
 const Collections = require('../../database/collections');
 const Models = require('../../database/models');
+const knex = require('../../database/db');
 
 //Node v7 do not support async/await
 const async = require('asyncawait/async');
@@ -9,7 +10,7 @@ const await = require('asyncawait/await');
 var list = require('../../database/seeds/examples/addList');
 
 module.exports = {
-  addList: async(function(req, res) {
+  addList: async((req, res) => {
     var data = req.body;
     var list = data.list;
 
@@ -29,13 +30,16 @@ module.exports = {
         console.log('list', list, 'storeIds', storeIds)
         
         //add list_id and store_id to lists_stores table
-          //use attach instead raw sql
-        // list.stores().attach({storeIds})
-        storeIds = storeIds.map((storeId) => {
-          return `${list.id},${storeId}`
-        })
-        var query = `insert into lists_stores (list_id, store_id) values (${storeIds.join("),(")});`;
-        Models.Bookshelf.knex.raw(query)
+
+        //attach in raw knex
+          // storeIds = storeIds.map((storeId) => {
+          //   return `${list.id},${storeId}`
+          // })
+          // var query = `insert into lists_stores (list_id, store_id) values (${storeIds.join("),(")});`;
+          // Models.Bookshelf.knex.raw(query)
+
+
+        list.stores().attach(storeIds)
           .then(() => {
             res.status(201).send();
           })
@@ -48,23 +52,42 @@ module.exports = {
       })
 
   }),
-  getList: function(req, res) {
+  getList: async((req, res) => {
     var listId = req.body.listId;
 
+    Models.List.where({id: listId})
+      .fetch({withRelated: ['stores.type', 'stores.categories']})
+      .then((list) => {
+        res.status(200).send(list)
+      })
+      .catch((err) => {
+        console.log("cannot find a list with listId " + err);
+      });
 
+  }),
+  getLists: async((req, res) => {
+    var userId = req.body.userId;
+    var Users = new Collections.Users();
+      
+    var myList = await(Users.getMyLists(userId));
+    var sharedList = await(Users.getSharedLists(userId));
+    
+    res.status(200).send({
+      myList: myList,
+      sharedList: sharedList
+    });
+
+  }),
+  updateList: (req, res) => {
   },
-  getLists: function(req, res) {
-  },
-  updateList: function(req, res) {
-  },
-  deleteList: function(req, res) {
+  deleteList: (req, res) => {
     var listId = req.body.listId;
     //delete all relations list has in lists_stores table
     //use detach
-    Models.Bookshelf.knex('lists_stores').where('list_id', listId).del()
+    knex('lists_stores').where('list_id', listId).del()
       .then(() => {
         //delete the list
-        Models.Bookshelf.knex('lists').where('id', listId).del()
+        knex('lists').where('id', listId).del()
           .then(() => {
             res.status(200);
           })
