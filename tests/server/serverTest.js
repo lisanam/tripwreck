@@ -1,3 +1,7 @@
+//change environment variable so it will use test server & database
+process.env.SERVER_PORT=3000;
+process.env.DB_ENV = 'test';
+
 //Chai setup
 const chai = require('chai');
 const expect = chai.expect;
@@ -9,9 +13,6 @@ const server = require('../../server/server.js');
 const supertest = require('supertest');
 const request = supertest.agent(server);
 
-//change environment variable so it will use test server & database
-process.env.SERVER_PORT=3000;
-process.env.DB_ENV = 'test';
 // const dbConnection = function() {
 //   var dbConnection = mysql.createConnection({
 //     user: 'ecstaticeels',
@@ -25,160 +26,160 @@ process.env.DB_ENV = 'test';
 const addListExample = require('../../database/seeds/examples/addList');
 
 
-describe('Server', function() {
-  // describe('Store controllers', function () {
-  //   describe('Search', function() {
-  //     it('should return search results', function (done) {
-  //       request
-  //         .get('/store/search?city=NewYork&keyword=food')
-  //         .expect(200)
-  //         .end(function(err, res) {
-  //           if (err) {
-  //             throw err;
-  //           }
+// describe('Store controllers', function () {
+//   describe('Search', function() {
+//     it('should return search results', function (done) {
+//       request
+//         .get('/store/search?city=NewYork&keyword=food')
+//         .expect(200)
+//         .end(function(err, res) {
+//           if (err) {
+//             throw err;
+//           }
 
-  //           var results = res.body;
-  //           expect(results).to.have.length.above(5); 
-  //           expect(results[0]).to.have.property('zomato_id');
-  //           expect(results[0]).to.have.property('name');
-  //           expect(results[0].location).to.have.lengthOf(2);
-  //           expect(results[0].address).to.have.lengthOf(6);
-  //           done();
-  //         });
-  //     });
+//           var results = res.body;
+//           expect(results).to.have.length.above(5); 
+//           expect(results[0]).to.have.property('zomato_id');
+//           expect(results[0]).to.have.property('name');
+//           expect(results[0].location).to.have.lengthOf(2);
+//           expect(results[0].address).to.have.lengthOf(6);
+//           done();
+//         });
+//     });
 
-  //     it('should find store\'s location when searched', function (done) {
-  //       request
-  //         .get('/store/search?city=NewYork&keyword=food')
-  //         .expect(200)
-  //         .end(function(err, res) {
-  //           if (err) {
-  //             throw err;
-  //           }
+//     it('should find store\'s location when searched', function (done) {
+//       request
+//         .get('/store/search?city=NewYork&keyword=food')
+//         .expect(200)
+//         .end(function(err, res) {
+//           if (err) {
+//             throw err;
+//           }
 
-  //           var result = res.body[0].address;
-  //           expect(result[2]).to.have.string('New York');
-  //           expect(result[3]).to.have.lengthOf(2);
-  //           expect(Number(result[4])).to.be.closeTo(10000, 50);
-  //           expect(result[5]).to.equal('United States');
-  //           done();
-  //         });
-  //     });
+//           var result = res.body[0].address;
+//           expect(result[2]).to.have.string('New York');
+//           expect(result[3]).to.have.lengthOf(2);
+//           expect(Number(result[4])).to.be.closeTo(10000, 50);
+//           expect(result[5]).to.equal('United States');
+//           done();
+//         });
+//     });
+//   });
+
+//   describe('Reviews', function() {
+//     it('should return reviews of a store', function (done) {
+//       request
+//         .get('/store/reviews?zomato_id=16843649')
+//         .expect(200)
+//         .end(function(err, res) {
+//           if (err) {
+//             throw err;
+//           }
+
+//           var reviews = res.body;
+//           expect(reviews).to.have.length.of.at.least(1); 
+//           expect(reviews[0]).to.have.all.keys([
+//             'zomato_id', 'rating', 'user', 'text', 
+//             'likes', 'timestamp', 'friendly_time'
+//           ]);
+//           done();
+//         });
+//     });
+//   });
+
+// });
+
+describe('List controllers', function () {
+  describe('Add List', function() {
+    it('should add new list', function (done) {
+      request
+        .post('/list')
+        .send({
+          title: 'List Title',
+          userId: 1,
+          userName: 'Lisa',
+          description: 'This is description',
+          city: 'New York City',
+          list: addListExample
+        })
+        .expect(201)
+        .end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+
+          var results = res.body;
+          // expect(result[2]).to.have.string('New York');
+
+          console.log(results)
+          done();
+        });
+    });
+  });
+
+  //   it('should find store\'s location when searched', function (done) {
+  //     request
+  //       .get('/store/search?city=NewYork&keyword=food')
+  //       .expect(200)
+  //       .end(function(err, res) {
+  //         if (err) {
+  //           throw err;
+  //         }
+
+  //         var result = res.body[0].address;
+  //         expect(result[2]).to.have.string('New York');
+  //         expect(result[3]).to.have.lengthOf(2);
+  //         expect(Number(result[4])).to.be.closeTo(10000, 50);
+  //         expect(result[5]).to.equal('United States');
+  //         done();
+  //       });
   //   });
-
-  //   describe('Reviews', function() {
-  //     it('should return reviews of a store', function (done) {
-  //       request
-  //         .get('/store/reviews?zomato_id=16843649')
-  //         .expect(200)
-  //         .end(function(err, res) {
-  //           if (err) {
-  //             throw err;
-  //           }
-
-  //           var reviews = res.body;
-  //           expect(reviews).to.have.length.of.at.least(1); 
-  //           expect(reviews[0]).to.have.all.keys([
-  //             'zomato_id', 'rating', 'user', 'text', 
-  //             'likes', 'timestamp', 'friendly_time'
-  //           ]);
-  //           done();
-  //         });
-  //     });
-  //   });
-
   // });
 
-  describe('List controllers', function () {
-    // describe('Add List', function() {
-    //   it('should add new list', function (done) {
-    //     request
-    //       .post('/list')
-    //       .send({
-    //         title: 'List Title',
-    //         userId: 1,
-    //         userName: 'Lisa',
-    //         description: 'This is description',
-    //         city: 'New York City',
-    //         list: addListExample
-    //       })
-    //       .expect(201)
-    //       .end(function(err, res) {
-    //         if (err) {
-    //           throw err;
-    //         }
-
-    //         var results = res.body;
-    //         console.log(results)
-    //         done();
-    //       });
-    //   });
-    // });
-
-    //   it('should find store\'s location when searched', function (done) {
-    //     request
-    //       .get('/store/search?city=NewYork&keyword=food')
-    //       .expect(200)
-    //       .end(function(err, res) {
-    //         if (err) {
-    //           throw err;
-    //         }
-
-    //         var result = res.body[0].address;
-    //         expect(result[2]).to.have.string('New York');
-    //         expect(result[3]).to.have.lengthOf(2);
-    //         expect(Number(result[4])).to.be.closeTo(10000, 50);
-    //         expect(result[5]).to.equal('United States');
-    //         done();
-    //       });
-    //   });
-    // });
-
-    describe('Get List', function() {
-       it('should get a list', function (done) {
-        request
-          .get('/list')
-          .send({listId: 7})
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
-            // console.log(JSON.stringify(res.body))
-            done();
-          });
-      });
+  describe('Get List', function() {
+      it('should get a list', function (done) {
+      request
+        .get('/list')
+        .send({listId: 7})
+        .expect(200)
+        .end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+          // console.log(JSON.stringify(res.body))
+          done();
+        });
     });
+  });
 
-    describe('Get Lists', function() {
-       it('should get a list', function (done) {
-        request
-          .get('/list/all')
-          .send({userId: 1})
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
-            console.log(res.body)
-            done();
-          });
-      });
+  describe('Get Lists', function() {
+      it('should get a list', function (done) {
+      request
+        .get('/list/all')
+        .send({userId: 1})
+        .expect(200)
+        .end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+          console.log(res.body)
+          done();
+        });
     });
+  });
 
-    describe('Delete List', function() {
-       it('should delete a list', function (done) {
-        request
-          .delete('/list')
-          .send({listId: 6})
-          .expect(200)
-          .end(function(err, res) {
-            if (err) {
-              throw err;
-            }
-            done();
-          });
-      });
+  describe('Delete List', function() {
+      it('should delete a list', function (done) {
+      request
+        .delete('/list')
+        .send({listId: 6})
+        .expect(200)
+        .end(function(err, res) {
+          if (err) {
+            throw err;
+          }
+          done();
+        });
     });
   });
 });
@@ -475,5 +476,5 @@ describe('Server', function() {
 //           });
 //       });
 //     });
-  // });
 // });
+

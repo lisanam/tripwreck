@@ -286,7 +286,7 @@ Collections.Stores.prototype.findOrCreateIds = async((storeArr) => {
 });
 
 //add new list to myLists
-Collections.Lists.prototype.make = (listId) => {
+Collections.Lists.prototype.make = (data) => {
   return new Promise((resolve, reject) => {
     //find storeIds
     var Stores = new Collections.Stores();
