@@ -1,7 +1,6 @@
 //Database
-const Collections = require('../../database/collections');
-const Models = require('../../database/models');
-const knex = require('../../database/db');
+const listsCollection = require('../../database/collections').Lists;
+const Lists = new listsCollection();
 
 //Node v7 do not support async/await
 const async = require('asyncawait/async');
@@ -10,67 +9,33 @@ const await = require('asyncawait/await');
 var list = require('../../database/seeds/examples/addList');
 
 module.exports = {
-  addList: async((req, res) => {
+  //add new List
+  addMyList: async((req, res) => {
     var data = req.body;
-    var list = data.list;
-
-    //find storeIds
-    var Stores = new Collections.Stores();
-    var storeIds = await(Stores.findOrCreateIds(list));
-    console.log('storeIds', storeIds)
-    //make new list
-    new Models.List({
-      title: data.title,
-      user_id: data.userId,
-      user_name: data.userName,
-      description: data.description,
-      city: data.city
-    }).save()
-      .then((list) => {
-        console.log('list', list, 'storeIds', storeIds)
-        
-        //add list_id and store_id to lists_stores table
-
-        //attach in raw knex
-          // storeIds = storeIds.map((storeId) => {
-          //   return `${list.id},${storeId}`
-          // })
-          // var query = `insert into lists_stores (list_id, store_id) values (${storeIds.join("),(")});`;
-          // Models.Bookshelf.knex.raw(query)
-
-
-        list.stores().attach(storeIds)
-          .then(() => {
-            res.status(201).send();
-          })
-          .catch((err) => {
-            console.log("cannot attach storeIds to list " + err);
-          });
-      })
-      .catch((err) => {
-        console.log("cannot create new list " + err);
-      })
-
+    var listId = await(Lists.make(data));
+    res.status(201).send(listId);
   }),
+
+  //add sharedList
+  addSharedList: async((req, res) => {
+    var userId = req.body.userId;
+    var listId = req.body.listId;
+    await(Lists.addSharedList(userId, listId));
+    res.status(201);
+  }),
+
+  //get detailed informations on stores in a list
   getList: async((req, res) => {
     var listId = req.body.listId;
-
-    Models.List.where({id: listId})
-      .fetch({withRelated: ['stores.type', 'stores.categories']})
-      .then((list) => {
-        res.status(200).send(list)
-      })
-      .catch((err) => {
-        console.log("cannot find a list with listId " + err);
-      });
-
+    var list = await(Lists.getInfo(listId));
+    res.status(200).send(list);
   }),
+
+  //get all lists that a user has
   getLists: async((req, res) => {
     var userId = req.body.userId;
-    var Users = new Collections.Users();
-      
-    var myList = await(Users.getMyLists(userId));
-    var sharedList = await(Users.getSharedLists(userId));
+    var myList = await(Lists.getMyLists(userId));
+    var sharedList = await(Lists.getSharedLists(userId));
     
     res.status(200).send({
       myList: myList,
@@ -78,27 +43,28 @@ module.exports = {
     });
 
   }),
+
+  //edit a list
   updateList: (req, res) => {
   },
-  deleteList: (req, res) => {
+
+  //delete myList (list I created)
+  deleteMyList: async((req, res) => {
     var listId = req.body.listId;
-    //delete all relations list has in lists_stores table
-    //use detach
-    knex('lists_stores').where('list_id', listId).del()
-      .then(() => {
-        //delete the list
-        knex('lists').where('id', listId).del()
-          .then(() => {
-            res.status(200);
-          })
-          .catch((err) => {
-            console.log("cannot delete from lists " + err);
-          })
-      })
-      .catch((err) => {
-        console.log("cannot delete from lists_stores " + err);
-      })
-  },
+    await(Lists.getMyLists(listId));
+    res.status(200);
+  }),
+
+  //delete a sharedList (list someone shared with me)
+  deleteSharedList: async((req, res) => {
+    var userId = req.body.userId;
+    var listId = req.body.listId;
+    await(Lists.deleteSharedList(userId, listId));
+    res.status(200);
+  })
+
+  //delete multiple lists
+  
 };
 
 // var Types = new Collections.Types();

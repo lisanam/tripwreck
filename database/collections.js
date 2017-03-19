@@ -31,33 +31,6 @@ const Collections = {
   //can be used with async/await
   //name is always in lowercase
 
-// Users
-Collections.Users.prototype.getMyLists = (userId) => {
-  return new Promise((resolve, reject) => {
-    Collections.Lists
-      .query({where: {user_id: userId}})
-      .fetch()
-      .then((lists) => {
-        resolve(lists);
-      })
-      .catch((err) => {
-        reject("cannot query lists collection with user_id " + err);
-      })
-  });
-},
-
-Collections.Users.prototype.getSharedLists = (userId) => {
-  return new Promise((resolve, reject) => {
-    knex.select('list_id').from('shared_lists').where('user_id', userId)
-      .then((lists) => {
-        console.log(lists)
-        resolve(lists);
-      })
-      .catch((err) => {
-        reject("cannot get list_ids from shared_lists table " + err);
-      })
-  });
-},
 
 // addList: function(list_id) {
 //   console.log('added', this);
@@ -342,12 +315,141 @@ Collections.Stores.prototype.findOrCreateIds = async((storeArr) => {
     });
 });
 
-//add new list to shared_list
-Collections.Users.prototype.addList = (userId, listId) => {
+//add new list to myLists
+Collections.Lists.prototype.make = (listId) => {
   return new Promise((resolve, reject) => {
-    // knex.insert()
+    //find storeIds
+    var Stores = new Collections.Stores();
+    var storeIds = await(Stores.findOrCreateIds(data.list));
+    
+    //make new list
+    new Models.List({
+      title: data.title,
+      user_id: data.userId,
+      user_name: data.userName,
+      description: data.description,
+      city: data.city
+    }).save()
+      .then((list) => {
+        //add list_id and store_id to lists_stores table
+
+        //attach in raw knex
+          // storeIds = storeIds.map((storeId) => {
+          //   return `${list.id},${storeId}`
+          // })
+          // var query = `insert into lists_stores (list_id, store_id) values (${storeIds.join("),(")});`;
+          // Models.Bookshelf.knex.raw(query)
+
+        list.stores().attach(storeIds)
+          .then(() => {
+            resolve(list.id);
+          })
+          .catch((err) => {
+            reject("cannot attach storeIds to list " + err);
+          });
+      })
+      .catch((err) => {
+        reject("cannot create new list " + err);
+      })
   });
+};
+
+//add add a shared list
+Collections.Lists.prototype.addSharedList = (userId, listId) => {
+  return new Promise((resolve, reject) => {
+    knex('shared_lists')
+      .insert({
+        user_id: userId,
+        listId: listId
+      })
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject("cannot insert into shared_lists " + err);
+      })
+  });
+};
+
+//delete list from myLists
+Collections.Lists.prototype.deleteMyList = (listId) => {
+  return new Promise((resolve, reject) => {
+    //delete all relations list has in lists_stores table
+      //use detach
+    knex('lists_stores').where('list_id', listId).del()
+      .then(() => {
+        //delete the list
+        knex('lists').where('id', listId).del()
+          .then(() => {
+            resolve();
+          })
+          .catch((err) => {
+            reject("cannot delete from lists " + err);
+          })
+      })
+      .catch((err) => {
+        reject("cannot delete from lists_stores " + err);
+      })
+  });
+};
+
+//delete from sharedList
+Collections.Lists.prototype.deleteSharedList = (userId, listId) => {
+  return new Promise((resolve, reject) => {
+    knex('shared_lists').where({
+      user_id: userId,
+      list_id: listId
+    }).del()
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject("cannot delete from shared_lists table " + err);
+      })
+  });
+};
+
+Collections.Lists.prototype.getInfo = (listId) => {
+  return new Promise((resolve, reject) => {
+    Models.List.where({id: listId})
+    .fetch({withRelated: ['stores.type', 'stores.categories']})
+    .then((list) => {
+      resolve(list)
+    })
+    .catch((err) => {
+      reject("cannot find a list with listId " + err);
+    });
+  }); 
 }
+
+Collections.Lists.prototype.getMyLists = (userId) => {
+  return new Promise((resolve, reject) => {
+    Collections.Lists
+      .query({where: {user_id: userId}})
+      .fetch()
+      .then((lists) => {
+        resolve(lists);
+      })
+      .catch((err) => {
+        reject("cannot query lists collection with user_id " + err);
+      })
+  });
+},
+
+Collections.Lists.prototype.getSharedLists = (userId) => {
+  return new Promise((resolve, reject) => {
+    knex.select('list_id').from('shared_lists').where('user_id', userId)
+      .then((lists) => {
+        console.log(lists)
+        resolve(lists);
+      })
+      .catch((err) => {
+        reject("cannot get list_ids from shared_lists table " + err);
+      })
+  });
+},
+
+
 
 
 module.exports = Collections;
