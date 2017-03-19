@@ -254,13 +254,31 @@ Collections.Stores.prototype.findOrCreateIds = async((storeArr) => {
                     //Drop temp table
                     knex.schema.dropTable('temp')
                       .then(() => {
-                        //find ids of stores that needs to be created
+                        //find stores that needs to be created
                         var Stores = new Collections.Stores();
-                        storeArr.forEach(async((store) => {
-                          if(zomato_ids.indexOf(store.zomato_id) !== -1) {
+                        var storesNeedToBeCreated = storeArr.filter((store) => {
+                          return zomato_ids.indexOf(store.zomato_id) !== -1;
+                        });
+
+                        //get categories that needs to be created
+                        var categoriesNeeded = [];
+                        storesNeedToBeCreated.forEach((stores) => {
+                          stores.categories.forEach((category) => {
+                            if(categoriesNeeded.indexOf(category) === -1) {
+                              categoriesNeeded.push(category);
+                            }
+                          })
+                        })
+
+                        //create all of categories needed
+                        var Categories = new Collections.Categories();
+                        await(Categories.findOrCreateIds(categoriesNeeded));
+
+                        //create new stores
+                        storesNeedToBeCreated.forEach(async((store) => {
                             ids.push(await(Stores.addNew(store)));
-                          }
                         }));
+                        
                         resolve(ids);
                       })
                       .catch((err) => {
