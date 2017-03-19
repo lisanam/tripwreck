@@ -28,23 +28,8 @@ const Collections = {
 };
 
 //Custom function for Collections
-  //can be used with async/await
+  //all return promises and can be used with async/await
   //name is always in lowercase
-
-
-// addList: function(list_id) {
-//   console.log('added', this);
-//   var lists = this.getMyLists();
-//   lists = [list_id].concat(lists);
-//   this.set('lists', lists);
-// },
-// deleteList: function(list_id) {
-//   var lists = this.get('lists');
-//   var ind = lists.indexOf(list_id);
-//   var deleted = lists.splice(ind, 1);
-//   this.set('lists', lists);
-//   console.log('deleted', deleted, this);
-// }
 
 //find type_id and make new type if it does not exist
 Collections.Types.prototype.findOrCreateId = (typeName) => {
@@ -72,7 +57,7 @@ Collections.Types.prototype.findOrCreateId = (typeName) => {
         reject('cannot query Types Collection ' + err);
       });
   });
-}
+};
 
 //find category_id and make new category if it does not exist
 Collections.Categories.prototype.findOrCreateId = (categoryName) => {
@@ -100,7 +85,7 @@ Collections.Categories.prototype.findOrCreateId = (categoryName) => {
         reject('cannot query Categories Collection ' + err);
       });
   });
-}
+};
 
 //find category_ids and make new categories if it does not exist
 Collections.Categories.prototype.findOrCreateIds = (categoryArr) => {
@@ -164,22 +149,7 @@ Collections.Categories.prototype.findOrCreateIds = (categoryArr) => {
         resolve("cannot select from categories " + err);
       });
   });
-}
-
-//store
-// getInfo: function(id) {
-//     Store.forge({id: id}).fetch({withRelated: ['types']})  
-//       .then(function(store) {
-//           console.log('Got store:', store.get('name'));
-//           console.log('Got type:', store.related('types'));
-//       });
-//   }
-
-Collections.Stores.prototype.getInfos = async((storeIds) => {
-  return new Promise((resolve, reject) => {
-    
-  });
-}),
+};
 
 //add new store in database with storeInfo from client
 Collections.Stores.prototype.addNew = async((storeInfo) => {
@@ -223,7 +193,7 @@ Collections.Stores.prototype.addNew = async((storeInfo) => {
         reject('cannot create new store ' + err);
       })
   });
-})
+});
 
 //find store_id and make new store if needed
 Collections.Stores.prototype.findOrCreateId = async((storeInfo) => {
@@ -357,6 +327,7 @@ Collections.Lists.prototype.make = (listId) => {
 //add add a shared list
 Collections.Lists.prototype.addSharedList = (userId, listId) => {
   return new Promise((resolve, reject) => {
+    //create a relation between the list and user
     knex('shared_lists')
       .insert({
         user_id: userId,
@@ -396,6 +367,7 @@ Collections.Lists.prototype.deleteMyList = (listId) => {
 //delete from sharedList
 Collections.Lists.prototype.deleteSharedList = (userId, listId) => {
   return new Promise((resolve, reject) => {
+    //delete a relation user has with a list
     knex('shared_lists').where({
       user_id: userId,
       list_id: listId
@@ -409,9 +381,11 @@ Collections.Lists.prototype.deleteSharedList = (userId, listId) => {
   });
 };
 
+//get detailed info on all stores in a list
 Collections.Lists.prototype.getInfo = (listId) => {
   return new Promise((resolve, reject) => {
     Models.List.where({id: listId})
+    //get type name and category names instead of ids
     .fetch({withRelated: ['stores.type', 'stores.categories']})
     .then((list) => {
       resolve(list)
@@ -420,10 +394,12 @@ Collections.Lists.prototype.getInfo = (listId) => {
       reject("cannot find a list with listId " + err);
     });
   }); 
-}
+};
 
+//get getMyLists (lists I created)
 Collections.Lists.prototype.getMyLists = (userId) => {
   return new Promise((resolve, reject) => {
+    //select all Lists associated with userId
     Collections.Lists
       .query({where: {user_id: userId}})
       .fetch()
@@ -434,10 +410,12 @@ Collections.Lists.prototype.getMyLists = (userId) => {
         reject("cannot query lists collection with user_id " + err);
       })
   });
-},
+};
 
+//get sharedLists (lists someone shared with me)
 Collections.Lists.prototype.getSharedLists = (userId) => {
   return new Promise((resolve, reject) => {
+    //select all of list_id from shared_lists table associated with userId
     knex.select('list_id').from('shared_lists').where('user_id', userId)
       .then((lists) => {
         console.log(lists)
@@ -447,7 +425,7 @@ Collections.Lists.prototype.getSharedLists = (userId) => {
         reject("cannot get list_ids from shared_lists table " + err);
       })
   });
-},
+};
 
 
 

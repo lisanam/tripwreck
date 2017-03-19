@@ -31,7 +31,7 @@ module.exports = {
     res.status(200).send(list);
   }),
 
-  //get all lists that a user has
+  //get all lists associated with a user
   getLists: async((req, res) => {
     var userId = req.body.userId;
     var myList = await(Lists.getMyLists(userId));
@@ -46,12 +46,17 @@ module.exports = {
 
   //edit a list
   updateList: (req, res) => {
+    var data = req.body;
+    //delete the list and create new list
+    await(Lists.deleteMyLists(data.listId));
+    var listId = await(Lists.make(data));
+    res.status(201).send(listId);
   },
 
   //delete myList (list I created)
   deleteMyList: async((req, res) => {
     var listId = req.body.listId;
-    await(Lists.getMyLists(listId));
+    await(Lists.deleteMyLists(listId));
     res.status(200);
   }),
 
