@@ -83,20 +83,3 @@ module.exports = {
   //delete multiple lists
   
 };
-
-// var Types = new Collections.Types();
-    // var id = await(Types.findOrCreateId('shopping'));
-    // console.log('type_id', id);
-
-    // var Categories = new Collections.Categories();
-    // console.log(Collections.Categories)
-    // var id = await(addCategoryIds(list[0].categories));
-
-    // var Stores = new Collections.Stores();
-    // var result = await(Stores.addNew(list[0]));
-    // console.log('new Store', result);
-
-    // var Categories = new Collections.Categories();
-    // var id = await(Categories.findOrCreateId('Cake'));
-    // var ids = await(Categories.findOrCreateIds([ 'Desserts', ' Japanese', ' Korean' ]));
-    // console.log('id', id, ids)

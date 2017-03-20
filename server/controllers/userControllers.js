@@ -7,51 +7,62 @@ const await = require('asyncawait/await');
 
 //Implement firebase
 //Implement uuid
-module.export = {
-  signup: async((req, res) => {
-    return new Promise(() => {
-      //change this after firebse Implementation
-      var authId = 'caa47ac6-81d1-408a-8090-6c86cefcfddb';
-      var user = await(Users.make(authId));
+module.exports = {
+  signUp: async((req, res) => {
+    var name = req.body.name;
+    var email = req.body.email;
+    var password = req.body.password;
+    var phone = req.body.phone;
+    //change this after firebase Implementation
+    var authId = 'caa47ac6-81d1-408a-8090weaasdfsdasd';
+    var user = await(Users.make(authId));
 
-      //if user is null return 404
-      if(!user) {
-        res.sendStatus(404);
-      }
+    console.log('user', user)
+    //if user is null return 404
+    if(!user) {
+      res.sendStatus(404);
+    }
 
-      res.status(200).send({
-        userId: user.id,
-        phone: user.phone,
-        myLists: [],
-        sharedLists: []
-      });
+    res.status(201).send({
+      name: name,
+      email: email,
+      userId: user.id,
+      phone: phone,
+      myLists: [],
+      sharedLists: []
     });
   }),
 
-  signin: async((req, res) => {
-    return new Promise(() => {
-      //change this after firebse Implementation
-      var authId = 'caa47ac6-81d1-408a-8090-6c86cefcfdd';
+  signIn: async((req, res) => {
+    //get name from firebase
+    var name;
+    var email = req.body.email;
+    var password = req.body.password;
 
-      //find user info with authId
-      var user = await(Users.find(authId));
+    //change this after firebse Implementation
+    var authId = 'caa47ac6-81d1-408a-8090-6c86cefcfddb';
 
-      //if user is null return 404
-      if(!user) {
-        res.sendStatus(404);
-      }
+    //find user info with authId
+    var user = await(Users.find(authId));
 
-      //get lists created by user
-      const Lists = new Collections.Lists();
-      var myLists = await(Lists.getMyLists(userId));
+    // user = JSON.parse(JSON.stringify(user));
 
-      res.status(200).send({
-        userId: user.id,
-        phone: user.phone,
-        myLists: myLists,
-        sharedLists: user.lists
-      });
+    //if user is null return 404
+    if(!user) {
+      res.sendStatus(404);
+    }
 
+    //get lists created by user
+    const Lists = new Collections.Lists();
+    var myLists = await(Lists.getMyLists(user.id));
+
+    res.status(200).send({
+      name: name,
+      email: email,
+      userId: user.id,
+      phone: user.phone,
+      myLists: myLists,
+      sharedLists: user.lists
     });
   })
 

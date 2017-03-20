@@ -474,8 +474,7 @@ Collections.Users.prototype.find = (authId) => {
     Models.User.where({auth_id: authId})
       .fetch({withRelated: 'lists'})
       .then((user) => {
-        console.log('user', user);
-        user ? resolve(user) : resolve(null);
+        user.id ? resolve(user) : resolve(null);
       })
       .catch((err) => {
         reject("cannot search users table " + err);
