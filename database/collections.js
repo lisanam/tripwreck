@@ -412,7 +412,7 @@ Collections.Lists.prototype.getInfo = (listId) => {
     //get type name and category names instead of ids
     .fetch({withRelated: ['stores.type', 'stores.categories']})
     .then((list) => {
-      resolve(list)
+        resolve(list);
     })
     .catch((err) => {
       reject("cannot find a list with listId " + err);
@@ -442,7 +442,7 @@ Collections.Lists.prototype.getSharedLists = (userId) => {
     //select all of list_id from shared_lists table associated with userId
     knex.select('list_id').from('shared_lists').where('user_id', userId)
       .then((lists) => {
-        lists[0].list_id ? resolve(lists): resolve(null);
+        lists[0] ? resolve(lists): resolve(null);
       })
       .catch((err) => {
         reject("cannot get list_ids from shared_lists table " + err);

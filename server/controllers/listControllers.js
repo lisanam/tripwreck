@@ -28,30 +28,42 @@ module.exports = {
   getList: async((req, res) => {
     var listId = req.body.listId;
     var list = await(Lists.getInfo(listId));
+
+    //make type_name and category_names property
+    list = JSON.parse(JSON.stringify(list));
+    var stores = list.stores;
+    stores.forEach((store) => {
+      store.type = store.type.name;
+      var categories = store.categories;
+      store.categories = categories.map((category) => {
+        return category.name;
+      });
+    });
+
     res.status(200).send({list: list});
   }),
 
   //get all lists associated with a user
   getLists: async((req, res) => {
     var userId = req.body.userId;
-    var myList = await(Lists.getMyLists(userId));
-    var sharedList = await(Lists.getSharedLists(userId));
+    var myLists = await(Lists.getMyLists(userId));
+    var sharedLists = await(Lists.getSharedLists(userId));
     
     res.status(200).send({
-      myList: myList,
-      sharedList: sharedList
+      myLists: myLists,
+      sharedLists: sharedLists
     });
 
   }),
 
   //edit a list
-  updateList: (req, res) => {
+  updateList: async((req, res) => {
     var data = req.body;
     //delete the list and create new list
-    await(Lists.deleteMyLists(data.listId));
+    await(Lists.deleteMyList(data.listId));
     var listId = await(Lists.make(data));
     res.status(201).send({listId: listId});
-  },
+  }),
 
   //delete myList (list I created)
   deleteMyList: async((req, res) => {
