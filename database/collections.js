@@ -225,8 +225,8 @@ Collections.Stores.prototype.findOrCreateIds = async((storeArr) => {
       var zomatoIds = storeArr.map((store) => {
         //remove spaces and lowercase store names
         return store.zomato_id;
-      })
-      console.log(zomatoIds)
+      });
+
       knex.select('id', 'zomato_id').from('stores').whereIn('zomato_id', zomatoIds)
         .then((ids) => {
           ids = ids.map((id) => {
@@ -278,7 +278,7 @@ Collections.Stores.prototype.findOrCreateIds = async((storeArr) => {
                         storesNeedToBeCreated.forEach(async((store) => {
                             ids.push(await(Stores.addNew(store)));
                         }));
-                        
+
                         resolve(ids);
                       })
                       .catch((err) => {
@@ -349,7 +349,7 @@ Collections.Lists.prototype.addSharedList = (userId, listId) => {
     knex('shared_lists')
       .insert({
         user_id: userId,
-        listId: listId
+        list_id: listId
       })
       .then(() => {
         resolve();
@@ -365,20 +365,26 @@ Collections.Lists.prototype.deleteMyList = (listId) => {
   return new Promise((resolve, reject) => {
     //delete all relations list has in lists_stores table
       //use detach
-    knex('lists_stores').where('list_id', listId).del()
+    knex('shared_lists').where('list_id', listId).del()
       .then(() => {
-        //delete the list
-        knex('lists').where('id', listId).del()
+        knex('lists_stores').where('list_id', listId).del()
           .then(() => {
-            resolve();
+            //delete the list
+            knex('lists').where('id', listId).del()
+              .then(() => {
+                resolve();
+              })
+              .catch((err) => {
+                reject("cannot delete from lists " + err);
+              })
           })
           .catch((err) => {
-            reject("cannot delete from lists " + err);
+            reject("cannot delete from lists_stores " + err);
           })
       })
       .catch((err) => {
-        reject("cannot delete from lists_stores " + err);
-      })
+        reject("cannot delete from shared_lists " + err);
+      });
   });
 };
 
@@ -436,8 +442,7 @@ Collections.Lists.prototype.getSharedLists = (userId) => {
     //select all of list_id from shared_lists table associated with userId
     knex.select('list_id').from('shared_lists').where('user_id', userId)
       .then((lists) => {
-        console.log(lists)
-        resolve(lists);
+        lists[0].list_id ? resolve(lists): resolve(null);
       })
       .catch((err) => {
         reject("cannot get list_ids from shared_lists table " + err);
@@ -445,7 +450,37 @@ Collections.Lists.prototype.getSharedLists = (userId) => {
   });
 };
 
+//make a new user with authId
+Collections.Users.prototype.make = (authId, phoneNum) => {
+  return new Promise((resolve, reject) => {
+    Models.User.where({auth_id: authId})
+      new Models.User({
+        auth_id: authId,
+        phone: phoneNum
+      }).save()
+        .then((user) => {
+          resolve(user);
+        })
+        .catch((err) => {
+          resolve(false);
+          reject("cannot add new user with authId " + err);
+        })
+  });
+};
 
-
+//find a user with authId
+Collections.Users.prototype.find = (authId) => {
+  return new Promise((resolve, reject) => {
+    Models.User.where({auth_id: authId})
+      .fetch({withRelated: 'lists'})
+      .then((user) => {
+        console.log('user', user);
+        user ? resolve(user) : resolve(null);
+      })
+      .catch((err) => {
+        reject("cannot search users table " + err);
+      })
+  });
+};
 
 module.exports = Collections;
