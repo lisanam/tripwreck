@@ -8,6 +8,8 @@ import ReduxThunk from 'redux-thunk';
 import reducers from './reducers';
 import Router from './Router';
 
+import Map from './components/common/Map';
+
 class App extends Component {
 
   componentWillMount() {
@@ -27,7 +29,8 @@ class App extends Component {
 
     return (
       <Provider store={store}>
-        <Router />
+        <Map />
+        {/*<Router />*/}
       </Provider>
     );
   }
