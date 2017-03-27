@@ -1,0 +1,3 @@
+rootProject.name = 'tripwreck_mobile'
+
+include ':app'

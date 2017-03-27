@@ -1,7 +1,7 @@
 module.exports = [ { zomato_id: '16786151',
     name: 'Food Gallery 32',
     location: [ '40.7475650000', '-73.9861140000' ],
-    address: 
+    address:
      [ '11 W 32nd Street, New York, NY 10001',
        'Gramercy',
        'New York City',
@@ -17,7 +17,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '17817824',
     name: 'Food Sermon',
     location: [ '40.6646583333', '-73.9537361111' ],
-    address: 
+    address:
      [ '355 Rogers Avenue, Brooklyn, NY 11225',
        'Crown Heights',
        'New York City',
@@ -33,7 +33,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16783181',
     name: 'Food Hut Bar',
     location: [ '40.6743900000', '-73.8026250000' ],
-    address: 
+    address:
      [ '13532 Rockaway Blvd, South Ozone Park, NY 11420',
        'South Richmond Hill',
        'New York City',
@@ -49,7 +49,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18074561',
     name: 'Food Sing',
     location: [ '40.7144583333', '-73.9613638889' ],
-    address: 
+    address:
      [ '172 Grand Street, Brooklyn, NY, NY 11211',
        'South Side',
        'New York City',
@@ -65,7 +65,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16787267',
     name: 'Food Freaks',
     location: [ '40.6915050000', '-73.9754283000' ],
-    address: 
+    address:
      [ 'Fort Greene Park, Brooklyn, NY 11217',
        'Fort Greene',
        'New York City',
@@ -81,7 +81,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '17764966',
     name: 'The Food Emporium',
     location: [ '40.7618222222', '-73.9863444444' ],
-    address: 
+    address:
      [ 'Trump Palace, 810 8th Avenue, New York, NY 10019',
        'Gramercy',
        'New York City',
@@ -97,7 +97,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18305561',
     name: 'Food Bazaar',
     location: [ '40.7522720000', '-73.9212730000' ],
-    address: 
+    address:
      [ '42-02 Northern Boulevard, NY 11101',
        'Hunters Point',
        'New York City',
@@ -113,7 +113,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18020539',
     name: 'Food King Chinese Restaurant',
     location: [ '40.7637777778', '-73.9923777778' ],
-    address: 
+    address:
      [ '694 10th Avenue, New York, NY, NY 10019',
        'Hell\'s Kitchen',
        'New York City',
@@ -129,7 +129,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16766119',
     name: 'Food King Chinese Restaurant',
     location: [ '40.6363500000', '-73.8988722222' ],
-    address: 
+    address:
      [ '9202 Avenue L, Brooklyn, NY 11236',
        'Avenue L, Canarsie',
        'New York City',
@@ -145,7 +145,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16766101',
     name: 'Food Bo Garden Chinese Restaurant',
     location: [ '40.8208630000', '-73.8965830000' ],
-    address: 
+    address:
      [ '934 E 163rd St, Bronx, NY 10459',
        'Longwood',
        'New York City',
@@ -161,7 +161,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18020560',
     name: 'The Food Emporium',
     location: [ '40.7676777778', '-73.9620361111' ],
-    address: 
+    address:
      [ '1175 3rd Avenue, New York, NY 10021',
        'Upper East Side',
        'New York City',
@@ -177,7 +177,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18078779',
     name: 'Food Lin',
     location: [ '40.6706194444', '-73.9853138889' ],
-    address: 
+    address:
      [ '399 5th Avenue, Brooklyn, NY, NY 11215',
        'Park Slope',
        'New York City',
@@ -193,7 +193,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18082582',
     name: 'Food Hai Chinese Restaurant',
     location: [ '40.8407333333', '-73.8790972222' ],
-    address: 
+    address:
      [ '2030 Boston Road, Bronx, NY 10460',
        'West Farms',
        'New York City',
@@ -209,7 +209,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16793681',
     name: 'Food Bar By Otarian',
     location: [ '40.7659805556', '-73.9835055556' ],
-    address: 
+    address:
      [ '947 8th Avenue, New York, NY 10019',
        'West 56th Street, Midtown',
        'New York City',
@@ -225,7 +225,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18029074',
     name: 'Food Fair Deli & Pizza',
     location: [ '40.7541470000', '-73.9979740000' ],
-    address: 
+    address:
      [ '433 West 34 Street, New York, NY 10001',
        'Midtown West',
        'New York City',
@@ -241,7 +241,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16766117',
     name: 'Food King Chinese Restaurant',
     location: [ '40.7116444444', '-73.9942555556' ],
-    address: 
+    address:
      [ '56 Market Street, New York, NY 10002',
        'Lower East Side',
        'New York City',
@@ -257,7 +257,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '16766114',
     name: 'Food Hut Restaurant & Bakery',
     location: [ '40.8770527778', '-73.8467027778' ],
-    address: 
+    address:
      [ '3497 Boston Road, Bronx, NY 10469',
        'Boston Road, Baychester',
        'New York City',
@@ -273,7 +273,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18092010',
     name: 'Food World',
     location: [ '40.7557000000', '-73.9776694444' ],
-    address: 
+    address:
      [ '20 E 46th Street, New York, NY, NY 10017',
        'East 47th Street, Gramercy',
        'New York City',
@@ -289,7 +289,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18038187',
     name: 'Food Corp. Doras\' Caffee',
     location: [ '40.7507972222', '-73.8627388889' ],
-    address: 
+    address:
      [ '103-08 39th Street, Queens, NY 11368',
        'Corona',
        'New York City',
@@ -305,7 +305,7 @@ module.exports = [ { zomato_id: '16786151',
   { zomato_id: '18115220',
     name: 'Food Liberation',
     location: [ '0.0000000000', '0.0000000000' ],
-    address: 
+    address:
      [ '1349 Lexington Avenue, New York, NY 10128',
        'Upper East Side',
        'New York City',

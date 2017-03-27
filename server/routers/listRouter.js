@@ -12,6 +12,6 @@ listRouter.route('/shared')
   .post(listControllers.addSharedList)
   .delete(listControllers.deleteSharedList)
 
-listRouter.get('/all', listControllers.getLists);
+listRouter.post('/all', listControllers.getLists);
 
 module.exports = listRouter;
